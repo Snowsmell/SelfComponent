@@ -6,6 +6,7 @@
 (function ($) {
     //定义扩展方法tarea
     $.fn.tarea = function (options, param) {
+        //如果有内部方法，会用到，不过这里并没有方法，下面的这句if可以无视
         if (typeof options === 'string') {
             return $.fn.tarea.methods[options](this, param);
         }
