@@ -29,7 +29,7 @@
         })    
         textarea[0].placeholder = options.text
         //字数span
-        var span = $('<span><em>'+options.limit+'</em>/<em>'+options.limit+'<em></span>')                
+        var span = $('<span><em>'+options.limit+'</em>\/<em>'+options.limit+'</em></span>')                
         span.css({
             position:'absolute',
             bottom:'5px',
