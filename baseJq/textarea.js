@@ -10,7 +10,7 @@
             return $.fn.tarea.methods[options](this, param);
         }
         //参数和默认的参数合并
-        options = $.extend({}, $.fn.tarea.default, options || {})
+        options = $.extend({}, $.fn.tarea['default'], options || {})
 
         //样式调整，添加textarea和提示框
         $(this).css({
@@ -26,10 +26,11 @@
             fontSize : options.font + 'px',
             width : options.width + 'px',
             height : options.height + 'px',
+            overflow:'auto'
         })    
-        textarea[0].placeholder = options.text
+        textarea[0].placeholder = options['text']
         //字数span
-        var span = $('<span><em>'+options.limit+'</em>/<em>'+options.limit+'<em></span>')                
+        var span = $('<span><em>'+options.limit+'</em>\/<em>'+options.limit+'</em></span>')                
         span.css({
             position:'absolute',
             bottom:'5px',
@@ -50,7 +51,7 @@
         })    
     };
     //默认设置
-    $.fn.tarea.default = {
+    $.fn.tarea['default'] = {
         width: 400,
         height: 200,
         font:14,
