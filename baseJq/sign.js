@@ -1,24 +1,40 @@
 /**
  * 基于jq,canvas签名组件
- * 2018.4.11 17:48 snowsmell
+ * @width {number} 设置区域宽度
+ * @height {number} 设置区域高度
+ * @lineWidth {number} 线宽
+ * @lineColor {string} 线的颜色
+ * @background {string} 画布背景色
+ * @border {string} 区域边框
+ * 
+ * 两个方法,element是目标元素
+ * empty方法，清空目标画布
+ * $(element).sing('empty')
+ * exportImg方法，保存当前画布为图片，base64格式,存储于sessionStorage
+ * $(element).sing('exportImg')
+ * 
+ * 2018.4.12 9:55 snowsmell
  */
 ;
 (function ($) {
     //构造函数，传入dom本身和参数
     $.fn.sign = function (options) {
+        //需要暴露保存和清除的两个方法
+        if (typeof options == 'string') {
+            return $.fn.sign.methods[options](this);
+        }
         var self = $(this)
         //合并参数
         options = $.extend({}, $.fn.sign.default, options || {})
-        var canDom = init(self, options)[0]
-
         //canvas具体设置
-        var context = canDom.getContext('2d') //画布上下文
+        var canDom = init(self, options)[0]
+        var context = canDom.getContext('2d')//画布上下文
         var canvasX = canDom.getBoundingClientRect().left; // 画板的坐标x
         var canvasY = canDom.getBoundingClientRect().top; // 画板的坐标y
         context.fillStyle = options.background; // 画布背景色
         context.lineWidth = options.lineWidth; // 线的宽度
-        context.strokeStyle = options.linecolor; // 线的颜色
-        context.fillRect(0, 0, options.width, options.height); // 画板的范围        
+        context.strokeStyle = options.lineColor; // 线的颜色
+        context.fillRect(0, 0, canDom.width, canDom.height); // 画板的范围        
 
         //事件
         canDom.addEventListener("mousedown", down, false);
@@ -36,7 +52,6 @@
             oldx = event.clientX - canvasX; // 鼠标在画板中点击的X的坐标
             oldy = event.clientY - canvasY; // 鼠标在画板中点击的Y的坐标
             context.beginPath(); // 开始路径
-            console.log(oldx)
         }
 
         // 鼠标移动
@@ -57,13 +72,12 @@
             onoff = false; // 关闭开关
             context.closePath(); // 关闭路径
         };
-
         //初始化设置容器和画布，并且返回canvas对象
         function init(self, options) {
             self.css({
                 boxSizing: 'border-box',
                 width: options.width + 'px',
-                height: options.height + options.buttonHeight + 'px',
+                height: options.height + 'px',
             })
             var canvas = $('<canvas></canvas>')
             canvas.css({
@@ -75,16 +89,27 @@
             self.append(canvas)
             return canvas
         }
-
     }
     $.fn.sign.default = {
         width: 600,
         height: 300,
-        buttonHeight: 60,
         border: 'none',
         background: '#ccc',
         lineWidth: 4,
-        linecolor: '#333',
+        lineColor: '#333',
     }
-
+    $.fn.sign.methods = {
+        empty: function (self) {
+            var canDom = self.find('canvas')[0]
+            var context = canDom.getContext('2d')
+            context.clearRect(0, 0, canDom.width, canDom.height)
+            context.fillRect(0, 0, canDom.width, canDom.height)
+        },
+        exportImg: function (self) {
+            //0.5是压缩率，图片是base64，这里选择存到session里面，后续操作待定
+            var expImg = self.find('canvas')[0].toDataURL("image/jpeg", 0.5)
+            sessionStorage.setItem('signImg', expImg)
+            console.log(expImg)
+        }
+    }
 })($)
