@@ -17,6 +17,7 @@
  */
 ;
 (function ($) {
+  //构造函数，传入dom本身和参数
   $.fn.sign = function (options) {
     //需要暴露保存和清除的两个方法
     if (typeof options == 'string') {
@@ -27,9 +28,9 @@
     options = $.extend({}, $.fn.sign.default, options || {})
     //canvas具体设置
     var canDom = init(self, options)[0]
-    var context = canDom.getContext('2d') //画布上下文
-    var canvasX = canDom.getBoundingClientRect().left; // 画板的坐标x
-    var canvasY = canDom.getBoundingClientRect().top; // 画板的坐标y
+    var context = canDom.getContext('2d')//画布上下文
+    var canvasX = $(canDom).offset().left;
+    var canvasY = $(canDom).offset().top;
     context.fillStyle = options.background; // 画布背景色
     context.lineWidth = options.lineWidth; // 线的宽度
     context.strokeStyle = options.lineColor; // 线的颜色
@@ -47,9 +48,12 @@
     var newy; // 结束坐标y
     // 鼠标按下
     function down(event) {
+      console.log("鼠标点击在页面顶部的高度：" + event.clientY)
+      console.log("画板和页面顶部的距离" + canvasY)
+      console.log("页面卷去的高度：" + $(document).scrollTop())
       onoff = true; // 打开开关
       oldx = event.clientX - canvasX; // 鼠标在画板中点击的X的坐标
-      oldy = event.clientY - canvasY; // 鼠标在画板中点击的Y的坐标
+      oldy = event.clientY + $(document).scrollTop() - canvasY; // 鼠标在画板中点击的Y的坐标
       context.beginPath(); // 开始路径
     }
 
@@ -58,7 +62,7 @@
       // 开关
       if (onoff) {
         newx = event.clientX - canvasX;
-        newy = event.clientY - canvasY;
+        newy = event.clientY + $(document).scrollTop() - canvasY;
         context.moveTo(oldx, oldy); // 线的起点坐标
         context.lineTo(newx, newy); // 线的始点坐标
         context.stroke(); // 初始化到画布中
